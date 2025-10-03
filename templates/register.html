@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Register - DIGITAL POLICE TG{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="main-container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user-plus me-2"></i>Citizen Registration
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Important:</strong> Registration requires Aadhaar verification. 
+                            You'll receive an OTP on your registered mobile number.
+                        </div>
+                        
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="aadhaar" class="form-label">
+                                            <i class="fas fa-id-card me-2"></i>Aadhaar Number
+                                        </label>
+                                        <input type="text" class="form-control" id="aadhaar" name="aadhaar" 
+                                               pattern="[0-9]{12}" maxlength="12" required
+                                               placeholder="Enter 12-digit Aadhaar">
+                                        <div class="form-text">12-digit Aadhaar number without spaces</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">
+                                            <i class="fas fa-phone me-2"></i>Mobile Number
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" 
+                                               pattern="[0-9]{10}" maxlength="10" required
+                                               placeholder="10-digit mobile number">
+                                        <div class="form-text">Mobile number linked with Aadhaar</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">
+                                            <i class="fas fa-user me-2"></i>Full Name
+                                        </label>
+                                        <input type="text" class="form-control" id="name" name="name" required
+                                               placeholder="Enter your full name">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Address
+                                        </label>
+                                        <textarea class="form-control" id="address" name="address" rows="3" required
+                                                  placeholder="Enter your complete address"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">
+                                            <i class="fas fa-lock me-2"></i>Password
+                                        </label>
+                                        <input type="password" class="form-control" id="password" name="password" 
+                                               minlength="6" required placeholder="Create a password">
+                                        <div class="form-text">Minimum 6 characters</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="confirm_password" class="form-label">
+                                            <i class="fas fa-lock me-2"></i>Confirm Password
+                                        </label>
+                                        <input type="password" class="form-control" id="confirm_password" 
+                                               name="confirm_password" required placeholder="Confirm password">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        I agree to the <a href="#" class="text-primary">Terms & Conditions</a> and 
+                                        <a href="#" class="text-primary">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{{ url_for('login') }}" class="text-primary">Login here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = this.value;
+    
+    if (password !== confirmPassword) {
+        this.setCustomValidity('Passwords do not match');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+
+document.getElementById('aadhaar').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard - DIGITAL POLICE TG{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-hero citizen">
+        <div class="dashboard-hero-content">
+            <span class="dashboard-badge">
+                <i class="fas fa-user-circle"></i> Citizen Workspace
+            </span>
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
+                <div>
+                    <h2 class="mb-2">Welcome back, {{ current_user.name }}.</h2>
+                    <p class="fs-5 mb-0">Track your filings, receive live updates, and stay connected with your assigned police station.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ url_for('file_case') }}" class="btn btn-light text-primary">
+                        <i class="fas fa-file-circle-plus me-2"></i>File a case now
+                    </a>
+                    <a href="{{ url_for('verify_otp') }}" class="btn btn-outline-light">
+                        <i class="fas fa-shield-check me-2"></i>Verify Aadhaar OTP
+                    </a>
+                </div>
+            </div>
+            <div class="dashboard-meta">
+                <span><i class="fas fa-id-card"></i>Aadhaar: {{ current_user.aadhaar }}</span>
+                <span><i class="fas fa-phone"></i>{{ current_user.phone }}</span>
+                <span><i class="fas fa-location-dot"></i>{{ current_user.address }}</span>
+                <span>
+                    <i class="fas fa-building-shield"></i>
+                    {% if current_user.station_id %}
+                        Assigned to nearest station
+                    {% else %}
+                        Pending station assignment
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-metrics">
+        <div class="metric-card">
+            <div class="metric-icon bg-primary-subtle text-primary">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <h3>{{ cases|length }}</h3>
+            <p>Total cases filed</p>
+            <div class="metric-trend neutral">
+                <i class="fas fa-arrow-up"></i> Real-time updates active
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: rgba(16,185,129,0.15); color: #047857;">
+                <i class="fas fa-badge-check"></i>
+            </div>
+            <h3>{{ cases|selectattr('status', 'equalto', 'Completed')|list|length }}</h3>
+            <p>Cases resolved</p>
+            <div class="metric-trend positive">
+                <i class="fas fa-clock"></i> Avg 7.4 days to closure
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: rgba(245,158,11,0.18); color: #b45309;">
+                <i class="fas fa-satellite-dish"></i>
+            </div>
+            <h3>{{ cases|selectattr('status', 'equalto', 'In Progress')|list|length }}</h3>
+            <p>Active investigations</p>
+            <div class="metric-trend warning">
+                <i class="fas fa-bell"></i> Notify officer if urgent
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <div>
+                    <h3 class="dashboard-section-title">Latest case activity</h3>
+                    <p class="dashboard-section-subtitle">Live feed showing the most recent updates made by officers on your filings.</p>
+                </div>
+                <a href="{{ url_for('file_case') }}" class="action-link">
+                    <i class="fas fa-circle-plus"></i> Submit new FIR
+                </a>
+            </div>
+            {% if cases %}
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-modern align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Case</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Filed</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for case in cases[:5] %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">{{ case.title }}</div>
+                                                <small class="text-muted">{{ case.case_number }}</small>
+                                            </td>
+                                            <td>
+                                                {% if case.status == 'Pending' %}
+                                                    <span class="status-chip status-pending-chip"><i class="fas fa-hourglass-half"></i> Pending</span>
+                                                {% elif case.status == 'In Progress' %}
+                                                    <span class="status-chip status-progress-chip"><i class="fas fa-spinner"></i> In Progress</span>
+                                                {% elif case.status == 'Completed' %}
+                                                    <span class="status-chip status-completed-chip"><i class="fas fa-check-circle"></i> Completed</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ case.status }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if case.priority == 'High' %}
+                                                    <span class="case-priority-high">High</span>
+                                                {% elif case.priority == 'Medium' %}
+                                                    <span class="case-priority-medium">Medium</span>
+                                                {% else %}
+                                                    <span class="case-priority-low">Low</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">{{ case.created_at.strftime('%d %b %Y') }}</div>
+                                                <small class="text-muted">Updated {{ case.updated_at.strftime('%d %b %Y') }}</small>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#caseModal{{ case.id }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if cases|length > 5 %}
+                                <div class="text-end"><small class="text-muted">Showing latest 5 cases</small></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="timeline-card">
+                        <h5 class="mb-4"><i class="fas fa-clock-rotate-left me-2"></i>Activity timeline</h5>
+                        {% set recent_cases = cases[:4] %}
+                        {% if recent_cases %}
+                            {% for case in recent_cases %}
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <h6>{{ case.title }}</h6>
+                                        <div class="timeline-meta">Case {{ case.case_number }} • Last update {{ case.updated_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+                                        <p class="mb-1">Status: <strong>{{ case.status }}</strong></p>
+                                        <p class="text-muted mb-0">Filed on {{ case.created_at.strftime('%d %b %Y') }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-clock"></i>
+                                <h5>No updates yet</h5>
+                                <p>Once you file a case, you’ll see status updates from your investigating officer here.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <h5>No cases filed yet</h5>
+                    <p>Begin by submitting your first FIR and receive real-time alerts as officers take action.</p>
+                    <a href="{{ url_for('file_case') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-circle-plus me-2"></i>File your first case
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if cases %}
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <div>
+                    <h3 class="dashboard-section-title">All filed cases</h3>
+                    <p class="dashboard-section-subtitle">Detailed overview of every case you’ve submitted with status, priority, and timelines.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-modern align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Case details</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Filed</th>
+                                    <th>Updated</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for case in cases %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">{{ case.title }}</div>
+                                        <small class="text-muted">{{ case.case_number }}</small>
+                                    </td>
+                                    <td>
+                                        {% if case.status == 'Pending' %}
+                                            <span class="status-chip status-pending-chip"><i class="fas fa-hourglass-half"></i> Pending</span>
+                                        {% elif case.status == 'In Progress' %}
+                                            <span class="status-chip status-progress-chip"><i class="fas fa-spinner"></i> In Progress</span>
+                                        {% elif case.status == 'Completed' %}
+                                            <span class="status-chip status-completed-chip"><i class="fas fa-check-circle"></i> Completed</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ case.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if case.priority == 'High' %}
+                                            <span class="case-priority-high">High</span>
+                                        {% elif case.priority == 'Medium' %}
+                                            <span class="case-priority-medium">Medium</span>
+                                        {% else %}
+                                            <span class="case-priority-low">Low</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ case.created_at.strftime('%d %b %Y') }}</td>
+                                    <td>{{ case.updated_at.strftime('%d %b %Y') }}</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#caseModal{{ case.id }}">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Case Detail Modals -->
+{% for case in cases %}
+<div class="modal fade" id="caseModal{{ case.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-folder me-2"></i>Case: {{ case.case_number }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle me-2"></i>Case Details</h6>
+                        <p><strong>Title:</strong> {{ case.title }}</p>
+                        <p><strong>Description:</strong> {{ case.description }}</p>
+                        <p><strong>Location:</strong> {{ case.location }}</p>
+                        <p><strong>Priority:</strong> 
+                            {% if case.priority == 'High' %}
+                                <span class="badge bg-danger">{{ case.priority }}</span>
+                            {% elif case.priority == 'Medium' %}
+                                <span class="badge bg-warning">{{ case.priority }}</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ case.priority }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-clock me-2"></i>Timeline</h6>
+                        <p><strong>Filed On:</strong> {{ case.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                        <p><strong>Last Updated:</strong> {{ case.updated_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                        <p><strong>Status:</strong> 
+                            {% if case.status == 'Pending' %}
+                                <span class="status-badge status-pending">{{ case.status }}</span>
+                            {% elif case.status == 'In Progress' %}
+                                <span class="status-badge status-progress">{{ case.status }}</span>
+                            {% elif case.status == 'Completed' %}
+                                <span class="status-badge status-completed">{{ case.status }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ case.status }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

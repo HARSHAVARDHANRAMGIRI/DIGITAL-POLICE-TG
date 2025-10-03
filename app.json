@@ -1,0 +1,27 @@
+{
+  "name": "Digital Police TG",
+  "description": "Digital Police Case Management System for Telangana",
+  "repository": "https://github.com/HARSHAVARDHANRAMGIRI/DIGITAL-POLICE-TG",
+  "logo": "https://raw.githubusercontent.com/HARSHAVARDHANRAMGIRI/DIGITAL-POLICE-TG/main/static/logo.svg",
+  "keywords": ["python", "flask", "police", "case-management", "telangana"],
+  "env": {
+    "FLASK_ENV": {
+      "description": "Flask environment",
+      "value": "production"
+    },
+    "SECRET_KEY": {
+      "description": "Secret key for Flask sessions",
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}

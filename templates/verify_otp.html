@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}OTP Verification - DIGITAL POLICE TG{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="main-container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-key me-2"></i>Aadhaar OTP Verification
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Step 1:</strong> Enter your Aadhaar number to receive OTP
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('send_otp') }}">
+                            <div class="mb-3">
+                                <label for="aadhaar" class="form-label">
+                                    <i class="fas fa-id-card me-2"></i>Aadhaar Number
+                                </label>
+                                <input type="text" class="form-control" id="aadhaar" name="aadhaar" 
+                                       pattern="[0-9]{12}" maxlength="12" required
+                                       placeholder="Enter 12-digit Aadhaar">
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Send OTP
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="alert alert-success">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Step 2:</strong> Enter the OTP received on your mobile
+                        </div>
+                        
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="otp" class="form-label">
+                                    <i class="fas fa-key me-2"></i>OTP Code
+                                </label>
+                                <input type="text" class="form-control" id="otp" name="otp" 
+                                       pattern="[0-9]{6}" maxlength="6" required
+                                       placeholder="Enter 6-digit OTP">
+                                <div class="form-text">6-digit OTP sent to your registered mobile</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-check me-2"></i>Verify OTP
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="mb-0">
+                                <a href="{{ url_for('login') }}" class="text-primary">
+                                    <i class="fas fa-arrow-left me-1"></i>Back to Login
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demo OTP -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle me-2"></i>Demo OTP
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2"><strong>For Testing:</strong></p>
+                        <p class="mb-1">1. Enter any 12-digit Aadhaar (e.g., 111111111111)</p>
+                        <p class="mb-1">2. Click "Send OTP" - you'll see the OTP in the success message</p>
+                        <p class="mb-0">3. Use that OTP to verify</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('aadhaar').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+
+document.getElementById('otp').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+</script>
+{% endblock %}

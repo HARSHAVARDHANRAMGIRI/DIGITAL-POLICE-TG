@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Nearby Police Stations - DIGITAL POLICE TG{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero-section" style="padding: 2rem 0;">
+        <div class="hero-content">
+            <h1 class="hero-title" style="font-size: 2.5rem;">
+                <i class="fas fa-map-location-dot me-3"></i>
+                Find Nearby Police Stations
+            </h1>
+            <p class="hero-subtitle">
+                Locate the nearest police station with real-time navigation and contact information
+            </p>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Location Tracker -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2"><i class="fas fa-location-crosshairs me-2 text-primary"></i>Your Current Location</h5>
+                        <p class="mb-0" id="location-status">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Detecting your location...
+                        </p>
+                        <p class="text-muted mb-0 mt-2" id="coordinates"></p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-primary" onclick="getLocation()">
+                            <i class="fas fa-location-arrow me-2"></i>Detect Location
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="card mb-4">
+            <div class="card-body p-0">
+                <div id="map" style="height: 500px; border-radius: 15px; overflow: hidden;">
+                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                        <div class="text-center p-4">
+                            <i class="fas fa-map fa-3x text-primary mb-3"></i>
+                            <h5>Interactive Map</h5>
+                            <p class="text-muted">Click "Detect Location" to view nearby stations on the map</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stations List -->
+        <div class="row g-4">
+            <div class="col-12">
+                <h3 class="mb-4"><i class="fas fa-building-shield me-2"></i>All Police Stations in Telangana</h3>
+            </div>
+            {% for station in stations %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 station-card" data-station-id="{{ station.id }}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="station-icon">
+                                    <i class="fas fa-building-shield"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="card-title mb-1">{{ station.name }}</h5>
+                                <span class="badge bg-primary-subtle text-primary">Station ID: {{ station.id }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="station-details">
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                <span>{{ station.address }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-pin text-success"></i>
+                                <span>Pincode: {{ station.pincode }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-phone text-primary"></i>
+                                <span><a href="tel:{{ station.phone }}">{{ station.phone }}</a></span>
+                            </div>
+                            <div class="detail-item distance-info" id="distance-{{ station.id }}">
+                                <i class="fas fa-route text-warning"></i>
+                                <span>Distance: Calculating...</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex gap-2">
+                            <button class="btn btn-sm btn-primary flex-fill" onclick="navigateToStation({{ station.id }})">
+                                <i class="fas fa-directions me-1"></i>Navigate
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="callStation('{{ station.phone }}')">
+                                <i class="fas fa-phone me-1"></i>Call
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .station-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .station-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        border-color: var(--primary-color);
+    }
+
+    .station-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .station-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: start;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .detail-item i {
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+
+    .detail-item a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .detail-item a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    #map {
+        background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    }
+</style>
+
+<script>
+    let userLocation = null;
+    let stations = [];
+
+    // Load stations data
+    async function loadStations() {
+        try {
+            const response = await fetch('/api/stations');
+            stations = await response.json();
+            console.log('Loaded stations:', stations);
+        } catch (error) {
+            console.error('Error loading stations:', error);
+        }
+    }
+
+    // Get user location
+    function getLocation() {
+        const statusEl = document.getElementById('location-status');
+        const coordsEl = document.getElementById('coordinates');
+        
+        if (navigator.geolocation) {
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Detecting your location...';
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    statusEl.innerHTML = '<i class="fas fa-check-circle me-2 text-success"></i>Location detected successfully!';
+                    coordsEl.innerHTML = `<strong>Coordinates:</strong> ${userLocation.lat.toFixed(6)}, ${userLocation.lng.toFixed(6)}`;
+                    
+                    calculateDistances();
+                    initMap();
+                },
+                (error) => {
+                    statusEl.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>Unable to detect location. Please enable location services.';
+                    console.error('Geolocation error:', error);
+                }
+            );
+        } else {
+            statusEl.innerHTML = '<i class="fas fa-times-circle me-2 text-danger"></i>Geolocation is not supported by your browser.';
+        }
+    }
+
+    // Calculate distance between two coordinates (Haversine formula)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the Earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+        return distance;
+    }
+
+    // Calculate distances to all stations
+    function calculateDistances() {
+        if (!userLocation) return;
+
+        stations.forEach(station => {
+            const distance = calculateDistance(
+                userLocation.lat,
+                userLocation.lng,
+                station.lat,
+                station.lng
+            );
+            
+            const distanceEl = document.getElementById(`distance-${station.id}`);
+            if (distanceEl) {
+                distanceEl.innerHTML = `
+                    <i class="fas fa-route text-warning"></i>
+                    <span><strong>${distance.toFixed(2)} km</strong> away</span>
+                `;
+            }
+        });
+
+        // Sort stations by distance
+        sortStationsByDistance();
+    }
+
+    // Sort station cards by distance
+    function sortStationsByDistance() {
+        const container = document.querySelector('.row.g-4');
+        const cards = Array.from(container.querySelectorAll('.station-card')).map(card => card.closest('.col-md-6'));
+        
+        cards.sort((a, b) => {
+            const idA = parseInt(a.querySelector('.station-card').dataset.stationId);
+            const idB = parseInt(b.querySelector('.station-card').dataset.stationId);
+            
+            const stationA = stations.find(s => s.id === idA);
+            const stationB = stations.find(s => s.id === idB);
+            
+            if (!userLocation || !stationA || !stationB) return 0;
+            
+            const distA = calculateDistance(userLocation.lat, userLocation.lng, stationA.lat, stationA.lng);
+            const distB = calculateDistance(userLocation.lat, userLocation.lng, stationB.lat, stationB.lng);
+            
+            return distA - distB;
+        });
+        
+        // Re-append sorted cards
+        cards.forEach(card => container.appendChild(card));
+    }
+
+    // Initialize map (simplified visualization)
+    function initMap() {
+        const mapEl = document.getElementById('map');
+        
+        let mapHTML = `
+            <div style="padding: 2rem; background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); height: 100%;">
+                <h5 class="mb-3"><i class="fas fa-map-marked-alt me-2"></i>Station Locations</h5>
+                <div class="row g-3">
+        `;
+        
+        stations.forEach(station => {
+            const distance = userLocation ? 
+                calculateDistance(userLocation.lat, userLocation.lng, station.lat, station.lng).toFixed(2) : 
+                'N/A';
+            
+            mapHTML += `
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <h6 class="mb-2">${station.name}</h6>
+                            <small class="text-muted">
+                                <i class="fas fa-location-dot me-1"></i>${station.lat.toFixed(4)}, ${station.lng.toFixed(4)}
+                                ${userLocation ? `<br><i class="fas fa-route me-1"></i>${distance} km away` : ''}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        mapHTML += `
+                </div>
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> For full interactive map with directions, integrate Google Maps or OpenStreetMap API.
+                </div>
+            </div>
+        `;
+        
+        mapEl.innerHTML = mapHTML;
+    }
+
+    // Navigate to station
+    function navigateToStation(stationId) {
+        const station = stations.find(s => s.id === stationId);
+        if (!station) return;
+        
+        // Open Google Maps with directions
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${station.lat},${station.lng}`;
+        window.open(url, '_blank');
+    }
+
+    // Call station
+    function callStation(phone) {
+        window.location.href = `tel:${phone}`;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStations().then(() => {
+            getLocation();
+        });
+    });
+</script>
+{% endblock %}

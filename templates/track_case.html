@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Track Case - DIGITAL POLICE TG{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero-section" style="padding: 2rem 0;">
+        <div class="hero-content">
+            <h1 class="hero-title" style="font-size: 2.5rem;">
+                <i class="fas fa-search-location me-3"></i>
+                Track Your Case
+            </h1>
+            <p class="hero-subtitle">
+                Real-time case status and location tracking
+            </p>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Case Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="case-info-grid">
+                            <div class="info-item">
+                                <label>Case Number</label>
+                                <strong>{{ case.case_number }}</strong>
+                            </div>
+                            <div class="info-item">
+                                <label>Status</label>
+                                {% if case.status == 'Pending' %}
+                                    <span class="status-chip status-pending-chip"><i class="fas fa-hourglass-half"></i> Pending</span>
+                                {% elif case.status == 'In Progress' %}
+                                    <span class="status-chip status-progress-chip"><i class="fas fa-spinner"></i> In Progress</span>
+                                {% elif case.status == 'Completed' %}
+                                    <span class="status-chip status-completed-chip"><i class="fas fa-check-circle"></i> Completed</span>
+                                {% endif %}
+                            </div>
+                            <div class="info-item">
+                                <label>Priority</label>
+                                {% if case.priority == 'High' %}
+                                    <span class="case-priority-high">High</span>
+                                {% elif case.priority == 'Medium' %}
+                                    <span class="case-priority-medium">Medium</span>
+                                {% else %}
+                                    <span class="case-priority-low">Low</span>
+                                {% endif %}
+                            </div>
+                            <div class="info-item">
+                                <label>Filed On</label>
+                                <strong>{{ case.created_at.strftime('%d %B %Y, %I:%M %p') }}</strong>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Updated</label>
+                                <strong>{{ case.updated_at.strftime('%d %B %Y, %I:%M %p') }}</strong>
+                            </div>
+                            <div class="info-item">
+                                <label>Location</label>
+                                <strong>{{ case.location }}</strong>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Title</label>
+                            <p>{{ case.title }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <p>{{ case.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Map -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>Incident Location</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="case-map" style="height: 400px; border-radius: 0 0 15px 15px; overflow: hidden;">
+                            <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-map-location-dot fa-3x text-primary mb-3"></i>
+                                    <h5>Incident Location</h5>
+                                    <p class="text-muted mb-3">{{ case.location }}</p>
+                                    <button class="btn btn-primary" onclick="showOnMap()">
+                                        <i class="fas fa-map me-2"></i>View on Google Maps
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Timeline -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clock-rotate-left me-2"></i>Case Timeline</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline-vertical">
+                            <div class="timeline-item-v">
+                                <div class="timeline-dot-v bg-success"></div>
+                                <div class="timeline-content-v">
+                                    <h6>Case Filed</h6>
+                                    <p class="text-muted mb-0">{{ case.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                                </div>
+                            </div>
+
+                            {% if case.status != 'Pending' %}
+                            <div class="timeline-item-v">
+                                <div class="timeline-dot-v bg-primary"></div>
+                                <div class="timeline-content-v">
+                                    <h6>Under Investigation</h6>
+                                    <p class="text-muted mb-0">Case assigned to officer</p>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if case.status == 'Completed' %}
+                            <div class="timeline-item-v">
+                                <div class="timeline-dot-v bg-success"></div>
+                                <div class="timeline-content-v">
+                                    <h6>Case Resolved</h6>
+                                    <p class="text-muted mb-0">{{ case.updated_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="shareCase()">
+                                <i class="fas fa-share-nodes me-2"></i>Share Case Details
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="printCase()">
+                                <i class="fas fa-print me-2"></i>Print Case Report
+                            </button>
+                            <a href="{{ url_for('nearby_stations') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-map-marker-alt me-2"></i>Find Police Station
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .case-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-item label {
+        display: block;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+
+    .timeline-vertical {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline-vertical::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+    }
+
+    .timeline-item-v {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .timeline-item-v:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-dot-v {
+        position: absolute;
+        left: -2rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px currentColor;
+    }
+
+    .timeline-content-v h6 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .timeline-content-v p {
+        font-size: 0.9rem;
+    }
+</style>
+
+<script>
+    function showOnMap() {
+        const location = "{{ case.location }}";
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+        window.open(url, '_blank');
+    }
+
+    function shareCase() {
+        const caseNumber = "{{ case.case_number }}";
+        const title = "{{ case.title }}";
+        const text = `Case ${caseNumber}: ${title}\nStatus: {{ case.status }}\nTrack at: ${window.location.href}`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: `Case ${caseNumber}`,
+                text: text,
+                url: window.location.href
+            }).catch(err => console.log('Error sharing:', err));
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Case details copied to clipboard!');
+            });
+        }
+    }
+
+    function printCase() {
+        window.print();
+    }
+</script>
+{% endblock %}

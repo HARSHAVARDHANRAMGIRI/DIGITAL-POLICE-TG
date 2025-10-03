@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}DIGITAL POLICE TG - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7 text-start">
+                    <span class="badge rounded-pill bg-warning text-dark mb-3">
+                        <i class="fas fa-bolt me-1"></i> Digital-first policing for Telangana
+                    </span>
+                    <h1 class="hero-title text-start">
+                        <i class="fas fa-shield-alt me-3"></i>
+                        Smart policing for every citizen
+                    </h1>
+                    <p class="hero-subtitle text-start">
+                        File FIRs from any device, receive live status notifications, and connect with your nearest police station without visiting in person.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Start Registration
+                        </a>
+                        <a href="{{ url_for('file_case') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-file-alt me-2"></i>File a Case
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-right-to-bracket me-2"></i>Login
+                        </a>
+                    </div>
+                    <div class="hero-metrics mt-4">
+                        <div class="hero-metric">
+                            <span>12.4k+</span>
+                            Verified citizens onboarded
+                        </div>
+                        <div class="hero-metric">
+                            <span>8.1k</span>
+                            FIRs filed digitally
+                        </div>
+                        <div class="hero-metric">
+                            <span>98%</span>
+                            Cases routed within 5 minutes
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="hero-card">
+                        <span class="badge mb-3">
+                            <i class="fas fa-satellite-dish me-1"></i> Live case desk
+                        </span>
+                        <h5 class="text-white">Stay one step ahead with live notifications</h5>
+                        <p class="mb-4">Every FIR is verified via Aadhaar, automatically routed to the right police station, and updated in real time for both citizens and officers.</p>
+                        <ul class="list-unstyled text-white-50 mb-4">
+                            <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Digital signatures for authenticity</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Built-in geo-tagging for case routing</li>
+                            <li><i class="fas fa-check-circle me-2 text-success"></i>SMS & in-app alerts for every update</li>
+                        </ul>
+                        <a href="{{ url_for('register') }}" class="btn btn-light text-primary w-100">
+                            <i class="fas fa-circle-arrow-right me-2"></i>Experience the citizen journey
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="stats-grid">
+        <div class="stats-card">
+            <div class="d-flex align-items-center gap-3">
+                <span class="display-6 text-primary"><i class="fas fa-building-shield"></i></span>
+                <div>
+                    <h3>112 Stations</h3>
+                    <p>Integrated across Telangana with live dashboards</p>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="d-flex align-items-center gap-3">
+                <span class="display-6 text-success"><i class="fas fa-stopwatch"></i></span>
+                <div>
+                    <h3>4m Avg</h3>
+                    <p>Time to allocate case to nearest jurisdiction</p>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="d-flex align-items-center gap-3">
+                <span class="display-6 text-warning"><i class="fas fa-chart-line"></i></span>
+                <div>
+                    <h3>24/7 Desk</h3>
+                    <p>Command center monitoring escalations statewide</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">What would you like to do today?</h2>
+            <p class="section-subtitle">Choose from quick actions tailored for citizens and officers. Every flow mirrors real-world police desk operations.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="quick-action-card">
+                    <i class="fas fa-address-card"></i>
+                    <h4>Citizen Registration</h4>
+                    <p>Complete KYC in minutes using Aadhaar and mobile OTP verification to access digital police services.</p>
+                    <a href="{{ url_for('register') }}" class="btn btn-link">
+                        Begin registration <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="quick-action-card">
+                    <i class="fas fa-file-circle-exclamation"></i>
+                    <h4>File an FIR</h4>
+                    <p>Submit detailed incident reports, attach media, and pinpoint the location for accurate jurisdiction mapping.</p>
+                    <a href="{{ url_for('file_case') }}" class="btn btn-link">
+                        Report an incident <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="quick-action-card">
+                    <i class="fas fa-user-shield"></i>
+                    <h4>Police Command Center</h4>
+                    <p>Monitor assigned cases, update investigation milestones, and generate actionable reports instantly.</p>
+                    <a href="{{ url_for('login') }}" class="btn btn-link">
+                        Access police desk <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Track Case Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card" style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(16,185,129,0.1)); border: 2px solid rgba(59,130,246,0.3);">
+                    <div class="card-body text-center p-4">
+                        <h3 class="mb-3"><i class="fas fa-search me-2"></i>Track Your Case</h3>
+                        <p class="mb-4">Enter your case number to track real-time status and location</p>
+                        <form action="/track_case/" method="get" class="row g-3 justify-content-center" onsubmit="return trackCase(event)">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-lg" id="caseNumber" placeholder="Enter Case Number (e.g., TG202401011234)" required>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search me-2"></i>Track Case
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-5">
+            <div class="col-12 text-center">
+                <h2 class="section-title">How the digital FIR journey works</h2>
+                <p class="section-subtitle">Every step is secure, compliant with Telangana Police protocols, and auditable for faster justice delivery.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step" data-step="01">
+                    <i class="fas fa-user-check fa-2x text-primary mb-3"></i>
+                    <h5>Verify identity</h5>
+                    <p class="mb-0">Authenticate with Aadhaar OTP to confirm citizen identity before filing.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step" data-step="02">
+                    <i class="fas fa-file-circle-plus fa-2x text-success mb-3"></i>
+                    <h5>Submit FIR details</h5>
+                    <p class="mb-0">Capture incident narrative, evidence, and precise location coordinates.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step" data-step="03">
+                    <i class="fas fa-diagram-next fa-2x text-warning mb-3"></i>
+                    <h5>Auto-route & assign</h5>
+                    <p class="mb-0">System maps jurisdiction and assigns case to the respective police station.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step" data-step="04">
+                    <i class="fas fa-bell fa-2x text-info mb-3"></i>
+                    <h5>Track live updates</h5>
+                    <p class="mb-0">Receive notifications from the investigation officer at every milestone.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-5 align-items-stretch">
+            <div class="col-lg-6">
+                <div class="testimonial-card h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-primary-subtle text-primary"><i class="fas fa-comment-dots me-1"></i> Citizen voices</span>
+                    </div>
+                    <p class="fs-5 mb-0">“Filing an FIR from home and tracking updates saved us multiple station visits. The case was acknowledged within minutes.”</p>
+                    <div class="testimonial-meta">
+                        <h6>Priya Sharma</h6>
+                        <span>Hyderabad resident</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="testimonial-card h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-success-subtle text-success"><i class="fas fa-chart-pie me-1"></i> Officer insights</span>
+                    </div>
+                    <p class="fs-5 mb-0">“The digital queue ensures every FIR is routed correctly. We track investigation SLAs and share status in real time.”</p>
+                    <div class="testimonial-meta">
+                        <h6>Inspector Ravi Kumar</h6>
+                        <span>Station House Officer, Cyberabad</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="cta-section">
+                    <h2 class="mb-3">Digital policing that mirrors the real desk experience</h2>
+                    <p class="mb-4">Join the statewide mission to deliver faster, transparent policing services for every Telangana citizen.</p>
+                    <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+                        <a href="{{ url_for('register') }}" class="btn btn-light text-primary">
+                            <i class="fas fa-user-plus me-2"></i>Register as Citizen
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light">
+                            <i class="fas fa-user-shield me-2"></i>Officer Login
+                        </a>
+                        <a href="{{ url_for('file_case') }}" class="btn btn-outline-light">
+                            <i class="fas fa-file-circle-plus me-2"></i>File FIR Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function trackCase(event) {
+    event.preventDefault();
+    const caseNumber = document.getElementById('caseNumber').value.trim();
+    if (caseNumber) {
+        window.location.href = `/track_case/${caseNumber}`;
+    }
+    return false;
+}
+</script>
+{% endblock %}

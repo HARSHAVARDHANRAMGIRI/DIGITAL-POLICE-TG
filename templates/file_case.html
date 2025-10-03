@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}File Case - DIGITAL POLICE TG{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="main-container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-file-alt me-2"></i>File New Case
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Important:</strong> Please provide accurate information. Your case will be automatically 
+                            routed to the nearest police station based on your location.
+                        </div>
+                        
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label">
+                                            <i class="fas fa-heading me-2"></i>Case Title
+                                        </label>
+                                        <input type="text" class="form-control" id="title" name="title" 
+                                               required placeholder="Brief description of the incident">
+                                        <div class="form-text">Provide a clear, concise title for your case</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="priority" class="form-label">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>Priority Level
+                                        </label>
+                                        <select class="form-select" id="priority" name="priority" required>
+                                            <option value="">Select Priority</option>
+                                            <option value="Low">Low - Non-urgent matter</option>
+                                            <option value="Medium" selected>Medium - Standard case</option>
+                                            <option value="High">High - Urgent matter</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left me-2"></i>Detailed Description
+                                </label>
+                                <textarea class="form-control" id="description" name="description" rows="5" required
+                                          placeholder="Provide a detailed description of what happened, when it happened, and any relevant details..."></textarea>
+                                <div class="form-text">Include date, time, people involved, and any evidence you have</div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="location" class="form-label">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Incident Location
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="location" name="location" 
+                                                   required placeholder="Street address, landmark, or area">
+                                            <button class="btn btn-outline-primary" type="button" onclick="detectLocation()">
+                                                <i class="fas fa-location-crosshairs me-1"></i>Detect
+                                            </button>
+                                        </div>
+                                        <div class="form-text" id="location-status">Where did the incident occur?</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="date" class="form-label">
+                                            <i class="fas fa-calendar me-2"></i>Incident Date
+                                        </label>
+                                        <input type="date" class="form-control" id="date" name="date" required>
+                                        <div class="form-text">When did this incident occur?</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="witnesses" class="form-label">
+                                    <i class="fas fa-users me-2"></i>Witnesses (if any)
+                                </label>
+                                <textarea class="form-control" id="witnesses" name="witnesses" rows="2"
+                                          placeholder="Names and contact details of any witnesses"></textarea>
+                                <div class="form-text">Optional: Include witness information if available</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="evidence" class="form-label">
+                                    <i class="fas fa-camera me-2"></i>Evidence Available
+                                </label>
+                                <textarea class="form-control" id="evidence" name="evidence" rows="2"
+                                          placeholder="Photos, videos, documents, or other evidence you have"></textarea>
+                                <div class="form-text">Optional: Describe any evidence you can provide</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="confirm" required>
+                                    <label class="form-check-label" for="confirm">
+                                        I confirm that all information provided is true and accurate to the best of my knowledge. 
+                                        I understand that filing a false report is a criminal offense.
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>File Case
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
+                                        <h6>Auto-Routing</h6>
+                                        <p class="small text-muted">Your case will be automatically sent to the nearest police station</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-tracking fa-2x text-success mb-2"></i>
+                                        <h6>Track Progress</h6>
+                                        <p class="small text-muted">Monitor your case status and updates in real-time</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set default date to today
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+// Character counter for description
+document.getElementById('description').addEventListener('input', function() {
+    const maxLength = 1000;
+    const currentLength = this.value.length;
+    const remaining = maxLength - currentLength;
+    
+    if (remaining < 0) {
+        this.value = this.value.substring(0, maxLength);
+    }
+});
+
+// Detect location function
+function detectLocation() {
+    const locationInput = document.getElementById('location');
+    const statusEl = document.getElementById('location-status');
+    
+    if (navigator.geolocation) {
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Detecting location...';
+        
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Use reverse geocoding (simplified version)
+                try {
+                    // For demo purposes, we'll just show coordinates
+                    // In production, use Google Maps Geocoding API or similar
+                    locationInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                    statusEl.innerHTML = '<i class="fas fa-check-circle me-1 text-success"></i>Location detected successfully!';
+                    
+                    // Optional: Try to get address using a free geocoding service
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                    const data = await response.json();
+                    if (data && data.display_name) {
+                        locationInput.value = data.display_name;
+                    }
+                } catch (error) {
+                    console.error('Geocoding error:', error);
+                    statusEl.innerHTML = '<i class="fas fa-check-circle me-1 text-success"></i>Coordinates detected. Please add more details.';
+                }
+            },
+            (error) => {
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle me-1 text-warning"></i>Unable to detect location. Please enter manually.';
+                console.error('Geolocation error:', error);
+            }
+        );
+    } else {
+        statusEl.innerHTML = '<i class="fas fa-times-circle me-1 text-danger"></i>Geolocation not supported by your browser.';
+    }
+}
+</script>
+{% endblock %}
