@@ -10,5 +10,5 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app import app
 
-# This is the WSGI application that Vercel will use
-# Vercel looks for 'app' variable in api/index.py
+# Vercel serverless function handler
+app = app
